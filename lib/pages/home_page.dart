@@ -6,6 +6,7 @@ import 'package:ijoa/pages/accout_page.dart';
 
 // pub
 import 'package:ijoa/pages/detail_page.dart';
+import 'package:ijoa/pages/info_input_views/children_input_view.dart';
 import 'package:ijoa/widgets/event_tile.dart';
 import 'package:ijoa/widgets/nm_icon_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -147,82 +148,9 @@ class _HomePageState extends State<HomePage> {
         scrollDirection: Axis.horizontal,
         itemCount: _playList.length,
         itemBuilder: (BuildContext context, int index) {
-          // return Container(
-          //   width: 200,
-          //   decoration: ConcaveDecoration(
-          //       shape: RoundedRectangleBorder(
-          //           borderRadius: BorderRadius.circular(15.0)),
-          //       depth: 8),
-          //   margin: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-          //   child: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.end,
-          //     children: <Widget>[
-          //       Padding(
-          //         padding: const EdgeInsets.all(8.0),
-          //         child: Container(
-          //           child: Row(
-          //             mainAxisAlignment: MainAxisAlignment.start,
-          //             children: <Widget>[
-          //               Chip(
-          //                 label: Text('1주차'),
-          //                 labelStyle:
-          //                     TextStyle(fontSize: 12.0, color: Colors.grey),
-          //                 visualDensity: VisualDensity.compact,
-          //                 backgroundColor: Colors.grey.shade200,
-          //                 shape: RoundedRectangleBorder(
-          //                     borderRadius: BorderRadius.circular(4.0)),
-          //               ),
-          //               SizedBox(
-          //                 width: 8.0,
-          //               ),
-          //               Chip(
-          //                 label: Text('사회성'),
-          //                 labelStyle:
-          //                     TextStyle(fontSize: 12.0, color: Colors.grey),
-          //                 visualDensity: VisualDensity.compact,
-          //                 backgroundColor: Colors.grey.shade200,
-          //                 shape: RoundedRectangleBorder(
-          //                     borderRadius: BorderRadius.circular(4.0)),
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          //       ),
-
-          //       Expanded(
-          //         child: Center(
-          //           child: Column(
-          //             mainAxisAlignment: MainAxisAlignment.center,
-          //             crossAxisAlignment: CrossAxisAlignment.start,
-          //             children: <Widget>[
-          //               CheckboxListTile(
-          //                 title: Text(_playList[index]),
-          //                 subtitle: Text('협응적 조형활동'),
-          //                 value: false,
-          //                 onChanged: (isChecked) {
-          //                   debugPrint('$isChecked');
-          //                 },
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          //       ),
-          //       Center(
-          //         child: FlatButton(
-          //           color: Colors.yellow.shade800,
-          //           child: Text(
-          //             '자세히 알아보기',
-          //             style: TextStyle(color: Colors.white),
-          //           ),
-          //           onPressed: () {},
-          //           shape: RoundedRectangleBorder(
-          //               borderRadius: BorderRadius.circular(20.0)),
-          //         ),
-          //       )
-          //     ],
-          //   ),
-          // );
-          return EventTile(event: eventModelList[0],);
+          return EventTile(
+            event: eventModelList[index],
+          );
         },
       ),
     );
@@ -263,7 +191,14 @@ class _HomePageState extends State<HomePage> {
         ),
         IconButton(
           icon: Icon(Icons.add),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => NewChildren(
+                          initialPage: _children.length,
+                        )));
+          },
         )
       ],
     );
@@ -293,7 +228,8 @@ class _HomePageState extends State<HomePage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ChildDetailPage(
-                              childTag: '$_name CHILDINDEX$_selectedIndex',
+                              name: _name,
+                              childTag: 'CHILDINDEX$_selectedIndex',
                             )),
                   );
                 },
@@ -314,7 +250,8 @@ class _HomePageState extends State<HomePage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ChildDetailPage(
-                              childTag: '$_name CHILDINDEX$_selectedIndex',
+                              name: _name,
+                              childTag: 'CHILDINDEX$_selectedIndex',
                             )),
                   );
                 },
@@ -381,6 +318,18 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
+    );
+  }
+}
+
+class NewChildren extends StatelessWidget {
+  final int initialPage;
+
+  const NewChildren({Key key, this.initialPage}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(child: ChildrenInputView(initialPage: initialPage)),
     );
   }
 }

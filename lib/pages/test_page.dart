@@ -8,9 +8,8 @@ import 'test_views/test_end_view.dart';
 import 'test_views/test_result_view.dart';
 
 class TestPage extends StatefulWidget {
-  // TOOD: use child key?
-  final name;
-  TestPage({this.name});
+  final childTag;
+  TestPage({this.childTag});
   @override
   _TestPageState createState() => _TestPageState();
 }
@@ -61,7 +60,7 @@ class _TestPageState extends State<TestPage> {
   }
 
   List<int> _scoreStringToList(String scoreString) {
-    if (scoreString == null) return []; 
+    if (scoreString == null) return [];
     List<String> _score = scoreString.split('/');
     return _score.map((e) => int.parse(e)).toList();
   }
@@ -83,9 +82,7 @@ class _TestPageState extends State<TestPage> {
       physics: NeverScrollableScrollPhysics(),
       controller: pageController,
       children: <Widget>[
-        TestStartView(
-          toNextPage,
-        ),
+        TestStartView(toNextPage),
         TestTitleView(toNextPage, '사회성'),
         TestQuestionsView(
           handleScore,
@@ -119,6 +116,7 @@ class _TestPageState extends State<TestPage> {
         // TODO: end page animation
         // TestEndView(toNextPage),
         TestResultView(
+          childTag: widget.childTag,
           socialityScore: _scoreStringToList(socialityScore),
           selfEsteemScore: _scoreStringToList(selfEsteemScore),
           creativityScore: _scoreStringToList(creativityScore),

@@ -8,6 +8,10 @@ import 'package:ijoa/pages/info_input_views/child_input_view.dart';
 import 'package:ijoa/widgets/custom_app_bar.dart';
 
 class ChildrenInputView extends StatefulWidget {
+  final int initialPage;
+
+  const ChildrenInputView({Key key, this.initialPage}) : super(key: key);
+
   @override
   _ChildrenInputViewState createState() => _ChildrenInputViewState();
 }
@@ -39,17 +43,28 @@ class _ChildrenInputViewState extends State<ChildrenInputView> {
       //     _metadata[1].toString() +
       //     '/' +
       //     _metadata[2].toString();
-      String _dataString = _metadata[0].toString() + '/아직 없습니다/아직 없습니다';
+      String _dataString =
+          _metadata[0].toString() + '/아직 없습니다/아직 없습니다/CHILDINDEX$i';
+      Map<String, String> _json = {
+        'name': _metadata[0].toString(),
+        'birthday': _metadata[1].toString(),
+        'gender': _metadata[2].toString()
+      };
       debugPrint('_dataString: $_dataString');
       _childrenMetadata.add(_dataString);
-      
-      prefs.setString('CHILD$i', '');
+      prefs.setString('CHILDINDEX$i', jsonEncode(_json));
     }
     prefs.setStringList('CHILDRENMETADATA', _childrenMetadata);
   }
 
-  PageController pageController =
-      PageController(initialPage: 0, keepPage: true);
+  PageController pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    pageController =
+        PageController(initialPage: widget.initialPage, keepPage: true);
+  }
 
   @override
   Widget build(BuildContext context) {

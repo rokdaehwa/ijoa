@@ -49,7 +49,7 @@ class _InfoInputPageState extends State<InfoInputPage> {
                       UserInputView(
                         toNextPage: toNextPage,
                       ),
-                      ChildrenInputView(),
+                      ChildrenInputView(initialPage: 0,),
                     ],
                   ),
                 ),

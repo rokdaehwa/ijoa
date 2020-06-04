@@ -5,10 +5,18 @@ class CustomBarChart extends StatelessWidget {
   final double barHeight;
   final double maxWidth;
   final String testResult;
+  double _getAverage(String scoreString) {
+    List _score = scoreString.split('/');
+    var _sum = _score.map((e) => int.parse(e)).toList().reduce((a, b) => a + b);
+    int _len = _score.length;
+    return _sum / _len;
+  }
+
   CustomBarChart({this.testResult, this.barHeight, this.maxWidth});
   @override
   Widget build(BuildContext context) {
-    List _result = testResult.split('/');
+    List _result = testResult.split(';');
+    List<double> _scores = _result.sublist(1).map((e) => _getAverage(e)).toList();
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -17,14 +25,14 @@ class CustomBarChart extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: _result.sublist(1).asMap().keys.map((index) {
-                double _ratio = double.parse(_result[index + 1]) / 4;
+              children: _scores.asMap().keys.map((index) {
+                double _ratio = _scores[index] / 4;
                 String _field = cognitionFields[index];
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      '${fieldToKorean(_field)} - ${_result[index + 1]}점',
+                      '${fieldToKorean(_field)} - ${_scores[index]}점',
                       style: TextStyle(fontSize: 9),
                     ),
                     Container(

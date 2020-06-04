@@ -3,9 +3,10 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:ijoa/decorations/concave_decoration.dart';
+import 'package:ijoa/models/child.dart';
+import 'package:ijoa/pages/child_edit_page.dart';
 import 'package:ijoa/pages/detail_page.dart';
 import 'package:ijoa/widgets/custom_app_bar.dart';
-import 'package:ijoa/widgets/nm_icon_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:ijoa/utils/variables.dart';
@@ -15,17 +16,27 @@ import 'package:ijoa/widgets/custom_line_chart.dart';
 import 'test_page.dart';
 
 class ChildDetailPage extends StatefulWidget {
+  final String name;
   final String childTag;
-  ChildDetailPage({this.childTag});
+
+  const ChildDetailPage({Key key, this.name, this.childTag}) : super(key: key);
   @override
   _ChildDetailPageState createState() => _ChildDetailPageState();
 }
 
 class _ChildDetailPageState extends State<ChildDetailPage> {
-  List<bool> _selections = [true, false];
-  int _selectedIndex = 0;
-  final String _testResultString =
-      '2020-05-24/2.4/1.2/1.1/3.5/2.7;2020-05-25/3.2/1.1/3.5/2.8/2.7;2020-05-26/1.3/3.5/2.8/3.1/3.5;';
+  List<bool> _selections = [false, true];
+  int _selectedIndex = 1;
+  List<String> _testResultString = [];
+
+  // List<String> _testResultString;
+
+  double _getAverage(String scoreString) {
+    List _score = scoreString.split('/');
+    var _sum = _score.map((e) => int.parse(e)).toList().reduce((a, b) => a + b);
+    int _len = _score.length;
+    return _sum / _len;
+  }
 
   @override
   void initState() {
@@ -35,9 +46,17 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
 
   void _startInit() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String _infoFromJson = prefs.getString('childFirst') ?? 'No info';
-    debugPrint('detail: $_infoFromJson');
-    // debugPrint('detail - decoded: ${jsonDecode(_infoFromJson)['firstName']}');
+    String _childInfo = prefs.getString(widget.childTag) ?? 'No Child Info';
+    setState(() {
+      _testResultString = prefs.getStringList('${widget.childTag}RESULTS') ??
+          [
+            // '2020-05-24;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3',
+            // '2020-05-25;2/3/1/2/3/1/4/1/2/3;2/3/1/0/3/1/4/1/2/3;2/3/1/2/3/1/4/1/0/3;2/3/0/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/0',
+            // '2020-06-04;4/2/4/2/3/3/2/4/3/1;1/3/2/4/1/3/2/4/1/3;1/3/4/1/3/1/4/1/2/3;1/3/1/2/4/1/3/1/3/4;1/3/2/2/3/2/3/3/2/4',
+            // '2020-06-04;1/2/3/1/3/1/3/2/4/3;1/3/1/3/2/1/3/1/3/4;2/3/2/3/2/3/4/3/2/4;2/3/4/3/2/1/4/2/4/2;1/3/2/3/4/2/3/4/3/3'
+          ];
+    });
+    debugPrint('childInfo: $_childInfo');
   }
 
   @override
@@ -50,16 +69,19 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               NMAppBar(
-                leadingIcon: Icons.arrow_back_ios,
-                leadingTooltip: '뒤로 가기',
-                leadingOnTap: () => Navigator.pop(context),
-                trailingIcon: Icons.add,
-                trailingTooltip: '테스트 하기',
-                trailingOnTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => TestPage()),
-                ),
-                title: RichText(
+                  leadingIcon: Icons.arrow_back_ios,
+                  leadingTooltip: '뒤로 가기',
+                  leadingOnTap: () => Navigator.pop(context),
+                  trailingIcon: Icons.mode_edit,
+                  trailingTooltip: '정보 수정하기',
+                  trailingOnTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ChildEditPage(
+                                  childTag: widget.childTag,
+                                )),
+                      ),
+                  title: RichText(
                       text: TextSpan(
                           style: Theme.of(context).textTheme.headline4,
                           children: [
@@ -68,11 +90,10 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                           style: TextStyle(color: Colors.grey),
                         ),
                         TextSpan(
-                          text: widget.childTag,
+                          text: widget.name,
                           // style: TextStyle(color: Colors.yellow.shade800),
                         ),
-                      ]))
-              ),
+                      ]))),
               Container(
                 decoration: ConcaveDecoration(
                     depth: 4,
@@ -89,9 +110,8 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            '변화 그래프',
+                            '검사 결과',
                             style: Theme.of(context).textTheme.headline5,
-                            // style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                           Container(
                             decoration: ConcaveDecoration(
@@ -137,6 +157,36 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                           ? _getLineChart()
                           : _getBarGraph(),
                     ),
+                    Container(
+                      color: Colors.amber[300],
+                      height: 80,
+                      child: Center(
+                          child: GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TestPage(
+                                    childTag: widget.childTag,
+                                  )),
+                        ),
+                        child: Container(
+                            width: 200,
+                            height: 40,
+                            // decoration: BoxDecoration(
+                            //   borderRadius: BorderRadius.circular(20.0),
+                            //   border: Border.all(color: Colors.white),
+                            //   // color: _contextColor.withOpacity(0.5)
+                            // ),
+                            child: Center(
+                                child: Text(
+                              '검사하기!',
+                              style: TextStyle(
+                                // color: Colors.black,
+                                fontSize: 16.0,
+                              ),
+                            ))),
+                      )),
+                    )
                   ],
                 ),
               ),
@@ -213,34 +263,39 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
   }
 
   Widget _getLineChart() {
-    List<String> _resultList = _testResultString.split(';');
+    List<String> _resultList = _testResultString;
     List<double> _points1 = [];
     List<double> _points2 = [];
     List<double> _points3 = [];
     List<double> _points4 = [];
     List<double> _points5 = [];
-    for (int i = 0; i < _resultList.length - 1; i++) {
-      List<String> _scores = _resultList[i].split('/');
-      _points1.add(double.parse(_scores[1]));
-      _points2.add(double.parse(_scores[2]));
-      _points3.add(double.parse(_scores[3]));
-      _points4.add(double.parse(_scores[4]));
-      _points5.add(double.parse(_scores[5]));
+    for (int i = 0; i < _resultList.length; i++) {
+      List<String> _scores = _resultList[i].split(';');
+      debugPrint('_scores: ${_scores.length}');
+      _points1.add(_getAverage(_scores[1]));
+      _points2.add(_getAverage(_scores[2]));
+      _points3.add(_getAverage(_scores[3]));
+      _points4.add(_getAverage(_scores[4]));
+      _points5.add(_getAverage(_scores[5]));
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Expanded(
-          child: CustomPaint(
-              size: Size(double.infinity, double.infinity),
-              painter: LineChartPainter(
-                points1: _points1,
-                points2: _points2,
-                points3: _points3,
-                points4: _points4,
-                points5: _points5,
-              )),
+          child: _testResultString.isNotEmpty
+              ? CustomPaint(
+                  size: Size(double.infinity, double.infinity),
+                  painter: LineChartPainter(
+                    points1: _points1,
+                    points2: _points2,
+                    points3: _points3,
+                    points4: _points4,
+                    points5: _points5,
+                  ))
+              : Center(
+                  child: Text('검사 결과 없음'),
+                ),
         ),
         Container(
           margin: const EdgeInsets.only(top: 4),
@@ -270,19 +325,17 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
   }
 
   Widget _getBarGraph() {
-    List<String> _resultList = _testResultString.split(';');
+    List<String> _resultList = _testResultString;
     return Padding(
       padding: const EdgeInsets.only(top: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Container(
-              height: 230,
-              margin: EdgeInsets.only(bottom: 12),
-              child: ListView.builder(
+      child: Container(
+          height: 230,
+          margin: EdgeInsets.only(bottom: 12),
+          child: _testResultString.isNotEmpty
+              ? ListView.builder(
                   scrollDirection: Axis.horizontal,
                   padding: EdgeInsets.only(left: 8, bottom: 2),
-                  itemCount: _resultList.length - 1,
+                  itemCount: _resultList.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
                       width: 160,
@@ -299,9 +352,10 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                         ),
                       ),
                     );
-                  })),
-        ],
-      ),
+                  })
+              : Center(
+                  child: Text('검사 결과 없음'),
+                )),
     );
   }
 

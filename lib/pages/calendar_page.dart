@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:ijoa/models/event.dart';
 import 'package:ijoa/pages/detail_page.dart';
+import 'package:ijoa/widgets/event_tile.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -27,18 +29,9 @@ class _CalendarPageState extends State<CalendarPage>
   void initState() {
     super.initState();
     final _today = DateTime.now();
-    Map _json = {
-      'yes': 111,
-      'no': 123,
-      'hmm': {'no?': 'this', 'yes?': 'that'}
-    };
 
     _events = {
-      _today: [
-        'Event A7',
-        'Event B7',
-        jsonEncode(_json),
-      ],
+      _today: eventModelList,
     };
 
     _selectedEvents = _events[_today] ?? [];
@@ -127,70 +120,116 @@ class _CalendarPageState extends State<CalendarPage>
       events: _events,
       startingDayOfWeek: StartingDayOfWeek.sunday,
       availableGestures: AvailableGestures.horizontalSwipe,
-      calendarStyle: CalendarStyle(
-        
-          selectedColor: Colors.deepOrange[400],
-          todayColor: Colors.deepOrange[200],
-          markersColor: Colors.brown[700],
-          outsideDaysVisible: true,
-          holidayStyle: TextStyle(color: Colors.amber),
-          weekendStyle: TextStyle(color: Colors.amber)),
-      headerStyle: HeaderStyle(
-          centerHeaderTitle: true,
-          formatButtonVisible: false,
-          titleTextStyle: TextStyle(color: Colors.transparent, fontSize: 0),
-          headerPadding: EdgeInsets.zero,
-          rightChevronIcon: Icon(
-            Icons.add,
-            color: Colors.transparent,
-            size: 0,
-          ),
-          leftChevronIcon: Icon(
-            Icons.add,
-            color: Colors.transparent,
-            size: 0,
-          )),
+      calendarStyle: _calendarStyle(),
+      headerStyle: _headerStyle(),
+      builders: _calendarBuilders(),
       daysOfWeekStyle:
-          DaysOfWeekStyle(weekendStyle: TextStyle(color: Colors.amber)),
+          DaysOfWeekStyle(weekendStyle: TextStyle(color: Colors.red[400])),
       onDaySelected: _onDaySelected,
       onVisibleDaysChanged: _onVisibleDaysChanged,
       onCalendarCreated: _onCalendarCreated,
     );
   }
 
+  HeaderStyle _headerStyle() {
+    return HeaderStyle(
+        centerHeaderTitle: true,
+        formatButtonVisible: false,
+        titleTextStyle: TextStyle(color: Colors.transparent, fontSize: 0),
+        headerPadding: EdgeInsets.zero,
+        rightChevronIcon: Icon(
+          Icons.add,
+          color: Colors.transparent,
+          size: 0,
+        ),
+        leftChevronIcon: Icon(
+          Icons.add,
+          color: Colors.transparent,
+          size: 0,
+        ));
+  }
+
+  CalendarStyle _calendarStyle() {
+    return CalendarStyle(
+        selectedColor: Colors.deepOrange[400],
+        todayColor: Colors.deepOrange[200],
+        markersColor: Colors.brown[700],
+        outsideDaysVisible: true,
+        holidayStyle: TextStyle(color: Colors.red[400]),
+        weekendStyle: TextStyle(color: Colors.red[400]));
+  }
+
+  CalendarBuilders _calendarBuilders() {
+    return CalendarBuilders(
+      selectedDayBuilder: (context, date, events) {
+        return _buildDay(
+            day: date.day.toString(), backgroundColor: Colors.amber[100]);
+      },
+      todayDayBuilder: (context, date, events) {
+        return _buildDay(day: date.day.toString());
+      },
+      dayBuilder: (context, date, events) {
+        return _buildDay(day: date.day.toString());
+      },
+      weekendDayBuilder: (context, date, events) {
+        return _buildDay(textColor: Colors.red[400], day: date.day.toString());
+      },
+      outsideDayBuilder: (context, date, events) {
+        return _buildDay(textColor: Colors.grey.shade300, day: date.day.toString());
+      },
+      outsideWeekendDayBuilder: (context, date, events) {
+        return _buildDay(textColor: Colors.red.shade100, day: date.day.toString());
+      },
+      markersBuilder: (context, date, events, holidays) {
+        final children = <Widget>[];
+        if (events.isNotEmpty) {
+          children.add(
+            Positioned(
+              top: 4,
+              right: 4,
+              // bottom: 1,
+              child: Container(
+                  color: Colors.amber,
+                  width: 12, height: 12,
+                  child: Center(
+                      child: Text(
+                    '${events.length}',
+                    style: TextStyle(fontSize: 8.0),
+                  ))
+                  ),
+            ),
+          );
+        }
+        return children;
+      },
+    );
+  }
+
+  Widget _buildDay({String day, Color backgroundColor, Color textColor}) {
+    return Container(
+      margin: const EdgeInsets.all(4.0),
+      color: backgroundColor ?? Colors.transparent,
+      width: 100,
+      height: 100,
+      child: Center(
+        child: Text(day,
+            style: TextStyle(color: textColor ?? Colors.grey.shade700)),
+      ),
+    );
+  }
+
   Widget _buildEventList() {
-    return ListView(
-      scrollDirection: Axis.horizontal,
-      children: _selectedEvents
-          .map((event) => SizedBox(
-                width: 150,
-                child: Card(
-                    margin:
-                        EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
-                    elevation: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        Expanded(child: Center(child: Text(event.toString()))),
-                        FlatButton(
-                          child: Text('자세히'),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DetailPage(
-                                        title: '놀이 자세히',
-                                        url:
-                                            'https://www.notion.so/pavilionai/2-d4aa5017272f4d17bd6630baeecabb6a',
-                                      )),
-                            );
-                          },
-                          textColor: Colors.grey,
-                        )
-                      ],
-                    )),
-              ))
-          .toList(),
+    return Container(
+      height: 250,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _selectedEvents.length,
+        itemBuilder: (BuildContext context, int index) {
+          return EventTile(
+            event: _selectedEvents[index],
+          );
+        },
+      ),
     );
   }
 }

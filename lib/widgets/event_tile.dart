@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ijoa/decorations/concave_decoration.dart';
 import 'package:ijoa/models/event.dart';
 import 'package:ijoa/utils/plays.dart';
 import 'package:ijoa/utils/variables.dart';
@@ -15,115 +14,114 @@ class EventTile extends StatefulWidget {
 
 class _EventTileState extends State<EventTile> {
   bool _isPlayed = false;
+  Color _contextColor = Colors.white;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200,
-      decoration: ConcaveDecoration(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-          depth: 8),
+      width: 210,
+      padding: EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color:
+            _isPlayed ? Colors.grey.shade300 : graphColors[widget.event.field],
+        borderRadius: BorderRadius.circular(32.0),
+      ),
       margin: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // IconButton(
-          //   icon: Icon(
-          //     Icons.help,
-          //     color: Colors.grey.shade400,
-          //     size: 20.0,
-          //   ),
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(
-          //           builder: (context) => DetailPage(
-          //               title: '놀이 자세히',
-          //               url:
-          //                   'https://www.notion.so/pavilionai/2-d4aa5017272f4d17bd6630baeecabb6a')),
-          //     );
-          //   },
-          // ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Chip(
-                    label: Text('${widget.event.weekNumber}주차'),
-                    labelStyle: TextStyle(fontSize: 12.0, color: Colors.grey),
-                    visualDensity: VisualDensity.compact,
-                    backgroundColor: Colors.grey.shade200,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4.0)),
-                  ),
-                  SizedBox(
-                    width: 8.0,
-                  ),
-                  Chip(
-                    label: Text(fieldToKorean(widget.event.field)),
-                    labelStyle: TextStyle(fontSize: 12.0, color: Colors.grey),
-                    visualDensity: VisualDensity.compact,
-                    backgroundColor: Colors.grey.shade200,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4.0)),
-                  ),
-                ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  playDatabase[widget.event.field][widget.event.playNumber],
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      color: _contextColor,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
+              GestureDetector(
+                onTap: () {},
+                child: Container(
+                  width: 24.0,
+                  height: 24.0,
+                  child: Center(
+                    child: Icon(
+                      Icons.more_vert,
+                      size: 20.0,
+                      color: _contextColor,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-
+          SizedBox(
+            height: 12.0,
+          ),
+          Row(
+            children: <Widget>[
+              _customChip(widget.event.childTag),
+              SizedBox(
+                width: 8.0,
+              ),
+              _customChip(fieldToKorean(widget.event.field)),
+            ],
+          ),
           Expanded(
-            child: Center(
-              child: Column(
+            child: Container(),
+          ),
+          GestureDetector(
+            onTap: () {
+              // TODO: database에 업데이트
+              setState(() {
+                _isPlayed = !_isPlayed;
+              });
+            },
+            child: Container(
+              height: 40.0,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20.0),
+                border: Border.all(color: _contextColor),
+                // color: _contextColor.withOpacity(0.5)
+              ),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  ListTile(title: Text(widget.event.childTag), dense: true,),
-                  CheckboxListTile(
-                    title: Text(playDatabase[widget.event.field][widget.event.playNumber]),
-                    subtitle: Text(widget.event.subField),
-                    value: _isPlayed,
-                    onChanged: (isChecked) {
-                      debugPrint('$isChecked');
-                      setState(() {
-                        _isPlayed = isChecked;
-                      });
-                      // TODO: 리스트 체크하면 DB 업데이트 하기
-                      // widget.event.isPlayed = isChecked;
-                    },
-                  ),
-                  // Text(
-                  //   _playList[index],
-                  //   style: TextStyle(
-                  //       fontSize: 20.0, fontWeight: FontWeight.bold),
-                  // ),
-                  // Text(
-                  //   '(협응적 조형활동)',
-                  //   style: TextStyle(fontSize: 12.0, color: Colors.grey),
-                  // ),
+                  // Icon(Icons.check_box_outline_blank),
+                  Text(
+                    _isPlayed ? '완료함' : '완료하기',
+                    style: TextStyle(
+                      color: _contextColor,
+                      fontSize: 16.0,
+                    ),
+                  )
                 ],
               ),
-            ),
-          ),
-
-          // Divider(height: 0.0),
-          Center(
-            child: FlatButton(
-              color: Colors.yellow.shade800,
-              child: Text(
-                '자세히 알아보기',
-                style: TextStyle(color: Colors.white),
-              ),
-              onPressed: () {},
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)),
             ),
           )
         ],
       ),
+    );
+  }
+
+  Widget _customChip(String label) {
+    return Container(
+      height: 30.0,
+      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+      child: Center(
+        child: Text(
+          label,
+          style: TextStyle(
+              color: _contextColor, letterSpacing: 1.0, fontSize: 12.0),
+        ),
+      ),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4.0),
+          color: _contextColor.withOpacity(0.3)),
     );
   }
 }
