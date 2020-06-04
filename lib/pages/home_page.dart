@@ -36,10 +36,6 @@ class _HomePageState extends State<HomePage> {
     '거미줄 꾸미기',
     '목장 꾸미기'
   ];
-  List<String> _currentList = [];
-  // TODO: perpage를 사용 기계의 가로 길이에 따라 다르게 !
-  static int _perPage = 2;
-  static int _present = 0;
 
   @override
   void initState() {
@@ -53,10 +49,7 @@ class _HomePageState extends State<HomePage> {
       _children = prefs.getStringList('CHILDRENMETADATA');
       _selections = List<bool>.generate(_children.length, (_) => false);
       _selections[0] = true;
-
-      _currentList.addAll(_playList.getRange(_present, _present + _perPage));
     });
-    debugPrint('currentList: $_currentList');
   }
 
   @override

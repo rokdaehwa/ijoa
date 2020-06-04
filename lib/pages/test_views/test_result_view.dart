@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ijoa/utils/variables.dart';
 import 'package:ijoa/widgets/custom_app_bar.dart';
 import 'package:ijoa/widgets/custom_radar_chart.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TestResultView extends StatelessWidget {
   final String childTag;
@@ -28,18 +28,6 @@ class TestResultView extends StatelessWidget {
     return _sum / _len;
   }
 
-  String _getResult() {
-    String _sociality = socialityScore.join('/');
-    String _selfEsteem = selfEsteemScore.join('/');
-    String _creativity = creativityScore.join('/');
-    String _happiness = happinessScore.join('/');
-    String _science = scienceScore.join('/');
-    String _day = DateTime.now().toString().split(' ')[0];
-
-    return [_day, _sociality, _selfEsteem, _creativity, _happiness, _science]
-        .join(';');
-  }
-
   @override
   Widget build(BuildContext context) {
     List<double> _scores = [
@@ -57,23 +45,13 @@ class TestResultView extends StatelessWidget {
               NMAppBar(
                 trailingIcon: Icons.close,
                 trailingTooltip: '닫기',
-                trailingOnTap: () async {
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  List<String> _childResults =
-                      prefs.getStringList('${childTag}RESULTS') ?? [];
-                  List<String> _newList = List<String>();
-                  _newList.addAll(_childResults);
-                  _newList.add(_getResult());
-                  debugPrint('_getResult: ${_getResult()}');
-                  prefs.setStringList('${childTag}RESULTS', _newList);
-                  Navigator.pop(context);
-                },
+                trailingOnTap: () => Navigator.pop(context),
                 title: Text(
                   '결과 분석',
                   style: Theme.of(context).textTheme.headline4,
                 ),
               ),
+              Text('$date'),
               CustomPaint(
                 size: Size(300, 300),
                 painter: RadarChartPainter(scores: _scores),
@@ -103,6 +81,7 @@ class FieldAnalysis extends StatelessWidget {
       children: <Widget>[
         Text('$tag'),
         Text('$scores'),
+        Text('${resultAnalysis[tag]}')
       ],
     );
   }

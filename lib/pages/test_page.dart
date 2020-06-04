@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ijoa/pages/test_views/test_start_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // test_views
 import 'test_views/test_title_view.dart';
@@ -52,11 +53,41 @@ class _TestPageState extends State<TestPage> {
     }
   }
 
+  String _getResult() {
+    // String _sociality = socialityScore.join('/');
+    // String _selfEsteem = selfEsteemScore.join('/');
+    // String _creativity = creativityScore.join('/');
+    // String _happiness = happinessScore.join('/');
+    // String _science = scienceScore.join('/');
+    String _day = DateTime.now().toString().split(' ')[0];
+
+    return [
+      _day,
+      socialityScore,
+      selfEsteemScore,
+      creativityScore,
+      happinessScore,
+      scienceScore
+    ].join(';');
+  }
+
   void toNextPage() {
     debugPrint('to Next Page !!!');
     const _duration = const Duration(milliseconds: 300);
     const _curve = Curves.ease;
     pageController.nextPage(duration: _duration, curve: _curve);
+  }
+
+  Future setPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> _childResults =
+        prefs.getStringList('${widget.childTag}RESULTS') ?? [];
+    List<String> _newList = List<String>();
+    _newList.addAll(_childResults);
+    _newList.add(_getResult());
+    debugPrint('_getResult: ${_getResult()}');
+    prefs.setStringList('${widget.childTag}RESULTS', _newList);
+    return '$_newList';
   }
 
   List<int> _scoreStringToList(String scoreString) {
@@ -114,7 +145,7 @@ class _TestPageState extends State<TestPage> {
           tag: 'science',
         ),
         // TODO: end page animation
-        // TestEndView(toNextPage),
+        TestEndView(toNextPage, setPreferences),
         TestResultView(
           childTag: widget.childTag,
           socialityScore: _scoreStringToList(socialityScore),

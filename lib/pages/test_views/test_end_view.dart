@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class TestEndView extends StatefulWidget {
   final Function toNextPage;
+  final Function setPreferences;
 
-  TestEndView(this.toNextPage);
+  TestEndView(this.toNextPage, this.setPreferences);
   @override
   _TestEndViewState createState() => _TestEndViewState();
 }
@@ -12,10 +13,7 @@ class _TestEndViewState extends State<TestEndView>
     with TickerProviderStateMixin {
   AnimationController controller;
   Animation<double> animation;
-
-  Future _getTestInfo(milli) async {
-    await Future.delayed(Duration(milliseconds: milli));
-  }
+  
 
   @override
   void initState() {
@@ -23,11 +21,6 @@ class _TestEndViewState extends State<TestEndView>
     controller = AnimationController(
         duration: const Duration(milliseconds: 1500), vsync: this);
     animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
-
-    _getTestInfo(3000).then((value) {
-      debugPrint('end page');
-      widget.toNextPage();
-    });
 
     // notice: 왔다갔다하는 애니메이션임
     animation.addStatusListener((status) {
@@ -38,6 +31,10 @@ class _TestEndViewState extends State<TestEndView>
       }
     });
     controller.forward();
+    widget.setPreferences().then((v) {
+      debugPrint('test end: $v');
+      widget.toNextPage();
+    });
   }
 
   @override

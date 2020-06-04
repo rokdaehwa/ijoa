@@ -1,11 +1,10 @@
-import 'dart:convert';
 import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:ijoa/decorations/concave_decoration.dart';
-import 'package:ijoa/models/child.dart';
 import 'package:ijoa/pages/child_edit_page.dart';
 import 'package:ijoa/pages/detail_page.dart';
+import 'package:ijoa/pages/test_views/test_result_view.dart';
 import 'package:ijoa/widgets/custom_app_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,6 +37,10 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
     return _sum / _len;
   }
 
+  List<int> _scoreStringToList(String scoreString) {
+    return scoreString.split('/').map((e) => int.parse(e)).toList();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -48,13 +51,12 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String _childInfo = prefs.getString(widget.childTag) ?? 'No Child Info';
     setState(() {
-      _testResultString = prefs.getStringList('${widget.childTag}RESULTS') ??
-          [
-            // '2020-05-24;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3',
-            // '2020-05-25;2/3/1/2/3/1/4/1/2/3;2/3/1/0/3/1/4/1/2/3;2/3/1/2/3/1/4/1/0/3;2/3/0/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/0',
-            // '2020-06-04;4/2/4/2/3/3/2/4/3/1;1/3/2/4/1/3/2/4/1/3;1/3/4/1/3/1/4/1/2/3;1/3/1/2/4/1/3/1/3/4;1/3/2/2/3/2/3/3/2/4',
-            // '2020-06-04;1/2/3/1/3/1/3/2/4/3;1/3/1/3/2/1/3/1/3/4;2/3/2/3/2/3/4/3/2/4;2/3/4/3/2/1/4/2/4/2;1/3/2/3/4/2/3/4/3/3'
-          ];
+      _testResultString =
+          prefs.getStringList('${widget.childTag}RESULTS') ?? [];
+      // '2020-05-24;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3',
+      // '2020-05-25;2/3/1/2/3/1/4/1/2/3;2/3/1/0/3/1/4/1/2/3;2/3/1/2/3/1/4/1/0/3;2/3/0/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/0',
+      // '2020-06-04;4/2/4/2/3/3/2/4/3/1;1/3/2/4/1/3/2/4/1/3;1/3/4/1/3/1/4/1/2/3;1/3/1/2/4/1/3/1/3/4;1/3/2/2/3/2/3/3/2/4',
+      // '2020-06-04;1/2/3/1/3/1/3/2/4/3;1/3/1/3/2/1/3/1/3/4;2/3/2/3/2/3/4/3/2/4;2/3/4/3/2/1/4/2/4/2;1/3/2/3/4/2/3/4/3/3'
     });
     debugPrint('childInfo: $_childInfo');
   }
@@ -339,16 +341,34 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
                       width: 160,
-                      child: Card(
-                        margin: EdgeInsets.only(right: 8),
-                        child: Center(
-                          child: Container(
-                              height: 210,
-                              child: CustomBarChart(
-                                testResult: _resultList[index],
-                                barHeight: 12.0,
-                                maxWidth: 144,
-                              )),
+                      child: GestureDetector(
+                        onTap: () {
+                          debugPrint('result detail!');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => TestResultView(
+                                      childTag: widget.childTag,
+                                      date: _resultList[index].split(';')[0],
+                                      socialityScore: _scoreStringToList(_resultList[index].split(';')[1]),
+                                      selfEsteemScore: _scoreStringToList(_resultList[index].split(';')[2]),
+                                      creativityScore: _scoreStringToList(_resultList[index].split(';')[3]),
+                                      happinessScore: _scoreStringToList(_resultList[index].split(';')[4]),
+                                      scienceScore: _scoreStringToList(_resultList[index].split(';')[5]),
+                                    )),
+                          );
+                        },
+                        child: Card(
+                          margin: EdgeInsets.only(right: 8),
+                          child: Center(
+                            child: Container(
+                                height: 210,
+                                child: CustomBarChart(
+                                  testResult: _resultList[index],
+                                  barHeight: 12.0,
+                                  maxWidth: 144,
+                                )),
+                          ),
                         ),
                       ),
                     );

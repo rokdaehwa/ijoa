@@ -122,7 +122,8 @@ class _TestQuestionsViewState extends State<TestQuestionsView> {
                     onPressed: () {
                       debugPrint('value: $radioValues');
                       widget.handleScore(
-                          '${radioValues[0]}/${radioValues[1]}/${radioValues[2]}/${radioValues[3]}/${radioValues[4]}/${radioValues[5]}/${radioValues[6]}/${radioValues[7]}/${radioValues[8]}/${radioValues[9]}',
+                          // '${radioValues[0]}/${radioValues[1]}/${radioValues[2]}/${radioValues[3]}/${radioValues[4]}/${radioValues[5]}/${radioValues[6]}/${radioValues[7]}/${radioValues[8]}/${radioValues[9]}',
+                          radioValues.join('/'),
                           widget.tag);
                       widget.toNextPage();
                     })

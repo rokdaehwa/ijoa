@@ -3,7 +3,6 @@ class Event {
   String date;
   String childTag;
   String field;
-  String subField;
   int playNumber;
   int weekNumber;
   bool isPlayed;
@@ -13,7 +12,6 @@ class Event {
       this.date,
       this.childTag,
       this.field,
-      this.subField,
       this.playNumber,
       this.weekNumber,
       this.isPlayed});
@@ -24,7 +22,6 @@ class Event {
       'date': date,
       'childTag': childTag,
       'field': field,
-      'subField': subField,
       'playNumber': playNumber,
       'weekNumber': weekNumber,
       'isPlayed': isPlayed,
@@ -33,7 +30,7 @@ class Event {
 
   @override
   String toString() {
-    return 'Event{id: $id, date: $date, childTag: $childTag, field: $field, subField: $subField, playNumber: $playNumber, weekNumber: $weekNumber, isPlayed: $isPlayed}';
+    return 'Event{id: $id, date: $date, childTag: $childTag, field: $field, playNumber: $playNumber, weekNumber: $weekNumber, isPlayed: $isPlayed}';
   }
 
 }
@@ -44,7 +41,6 @@ List<Event> eventModelList = [
       date: '2020-05-06',
       childTag: '기상이',
       field: 'sociality',
-      subField: '협동적 조형활동',
       playNumber: 1,
       weekNumber: 2,
       isPlayed: false),
@@ -53,7 +49,6 @@ List<Event> eventModelList = [
       date: '2020-05-06',
       childTag: '해찬이',
       field: 'selfEsteem',
-      subField: '협동적 조형활동',
       playNumber: 1,
       weekNumber: 2,
       isPlayed: false),
@@ -62,7 +57,6 @@ List<Event> eventModelList = [
       date: '2020-05-06',
       childTag: '기상이',
       field: 'creativity',
-      subField: '협동적 조형활동',
       playNumber: 1,
       weekNumber: 2,
       isPlayed: false),
@@ -71,7 +65,6 @@ List<Event> eventModelList = [
       date: '2020-05-06',
       childTag: '기상이',
       field: 'happiness',
-      subField: '협동적 조형활동',
       playNumber: 1,
       weekNumber: 2,
       isPlayed: false),
@@ -80,7 +73,6 @@ List<Event> eventModelList = [
       date: '2020-05-06',
       childTag: '기상이',
       field: 'science',
-      subField: '협동적 조형활동',
       playNumber: 1,
       weekNumber: 2,
       isPlayed: false),

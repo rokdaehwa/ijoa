@@ -2,6 +2,8 @@ class Child {
   String name;
   String birthday;
   String gender;
+  // String lastTested;
+  // String lastPlayed;
 
   Child.fromJson(Map<String, dynamic> json)
       : name = json['name'],

@@ -166,7 +166,7 @@ class _CalendarPageState extends State<CalendarPage>
             day: date.day.toString(), backgroundColor: Colors.amber[100]);
       },
       todayDayBuilder: (context, date, events) {
-        return _buildDay(day: date.day.toString());
+        return _buildDay(day: date.day.toString(), backgroundColor: Colors.indigo[100]);
       },
       dayBuilder: (context, date, events) {
         return _buildDay(day: date.day.toString());
@@ -189,7 +189,7 @@ class _CalendarPageState extends State<CalendarPage>
               right: 4,
               // bottom: 1,
               child: Container(
-                  color: Colors.amber,
+                  color: Colors.pink[200],
                   width: 12, height: 12,
                   child: Center(
                       child: Text(
