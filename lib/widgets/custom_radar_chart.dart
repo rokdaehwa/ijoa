@@ -14,7 +14,6 @@ class RadarChartPainter extends CustomPainter {
 
     var ticks = [1, 2, 3, 4];
     var tickDistance = radius / (ticks.length);
-    const double tickLabelFontSize = 10;
 
     var ticksPaint = Paint()
       ..color = Colors.grey[300]
@@ -26,17 +25,6 @@ class RadarChartPainter extends CustomPainter {
       var tickRadius = tickDistance * (index + 1);
 
       canvas.drawCircle(centerOffset, tickRadius, ticksPaint);
-
-      // TextPainter(
-      //   text: TextSpan(
-      //     text: tick.toString(),
-      //     style: TextStyle(color: Colors.grey, fontSize: tickLabelFontSize),
-      //   ),
-      //   textDirection: TextDirection.ltr,
-      // )
-      //   ..layout(minWidth: 0, maxWidth: size.width)
-      //   ..paint(
-      //       canvas, Offset(centerX, centerY - tickRadius - tickLabelFontSize));
     });
 
     var features = ["사회성", "자아존중감", "창의성", "행복도", "과학적 사고"];
@@ -80,11 +68,11 @@ class RadarChartPainter extends CustomPainter {
         ..color = graphColors[index % graphColors.length].withOpacity(0.3)
         ..style = PaintingStyle.fill;
 
-      var graphOutlinePaint = Paint()
-        ..color = graphColors[index % graphColors.length]
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.0
-        ..isAntiAlias = true;
+      // var graphOutlinePaint = Paint()
+      //   ..color = graphColors[index % graphColors.length]
+      //   ..style = PaintingStyle.stroke
+      //   ..strokeWidth = 2.0
+      //   ..isAntiAlias = true;
 
       // Start the graph on the initial point
       var scaledPoint = scale * graph[0];
@@ -103,13 +91,12 @@ class RadarChartPainter extends CustomPainter {
 
       path.close();
       canvas.drawPath(path, graphPaint);
-      canvas.drawPath(path, graphOutlinePaint);
+      // canvas.drawPath(path, graphOutlinePaint);
     });
   }
 
   @override
   bool shouldRepaint(RadarChartPainter oldDelegate) {
-    // TODO: implement shouldRepaint
     return oldDelegate.scores != scores;
   }
 }

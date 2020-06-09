@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:ijoa/models/event.dart';
-import 'package:ijoa/pages/detail_page.dart';
 import 'package:ijoa/widgets/event_tile.dart';
+import 'package:ijoa/widgets/nm_icon_button.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -31,7 +29,7 @@ class _CalendarPageState extends State<CalendarPage>
     final _today = DateTime.now();
 
     _events = {
-      _today: eventModelList,
+      _today: [],
     };
 
     _selectedEvents = _events[_today] ?? [];
@@ -75,47 +73,57 @@ class _CalendarPageState extends State<CalendarPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: _calendarAppBar(),
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        // crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Divider(
-            height: 0,
-          ),
-          _buildTableCalendar(),
-          SizedBox(
-            height: 24,
-          ),
-          Text(
-            'Todo List: ' + _getDateFromDateTime(_selectedDay),
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-          Expanded(child: _buildEventList()),
-        ],
+      body: SafeArea(
+              child: Column(
+          mainAxisSize: MainAxisSize.max,
+          // crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            _calendarAppBar(),
+            Divider(height: 0,),
+            _buildTableCalendar(),
+            SizedBox(
+              height: 24,
+            ),
+            Text(
+              'Todo List: ' + _getDateFromDateTime(_selectedDay),
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+            Expanded(child: _buildEventList()),
+          ],
+        ),
       ),
     );
   }
 
   Widget _calendarAppBar() {
-    return AppBar(
-      title: Text(_focusedDay.month.toString() + "월"),
-      backgroundColor: Colors.white,
-      elevation: 0,
-      centerTitle: true,
-      automaticallyImplyLeading: false,
-      actions: <Widget>[
-        IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () => Navigator.pop(context),
-        )
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text(
+              _focusedDay.month.toString() + "월",
+              style: Theme.of(context).textTheme.headline4,
+            ),
+          ),
+          Row(
+            children: <Widget>[
+              SizedBox(width: 4),
+              NMButton(
+                icon: Icons.close,
+                onTap: () => Navigator.pop(context),
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 
   Widget _buildTableCalendar() {
     return TableCalendar(
-      // locale: Locale('ko', 'KR'),
       calendarController: _calendarController,
       events: _events,
       startingDayOfWeek: StartingDayOfWeek.sunday,
@@ -166,7 +174,8 @@ class _CalendarPageState extends State<CalendarPage>
             day: date.day.toString(), backgroundColor: Colors.amber[100]);
       },
       todayDayBuilder: (context, date, events) {
-        return _buildDay(day: date.day.toString(), backgroundColor: Colors.indigo[100]);
+        return _buildDay(
+            day: date.day.toString(), backgroundColor: Colors.indigo[100]);
       },
       dayBuilder: (context, date, events) {
         return _buildDay(day: date.day.toString());
@@ -175,10 +184,12 @@ class _CalendarPageState extends State<CalendarPage>
         return _buildDay(textColor: Colors.red[400], day: date.day.toString());
       },
       outsideDayBuilder: (context, date, events) {
-        return _buildDay(textColor: Colors.grey.shade300, day: date.day.toString());
+        return _buildDay(
+            textColor: Colors.grey.shade300, day: date.day.toString());
       },
       outsideWeekendDayBuilder: (context, date, events) {
-        return _buildDay(textColor: Colors.red.shade100, day: date.day.toString());
+        return _buildDay(
+            textColor: Colors.red.shade100, day: date.day.toString());
       },
       markersBuilder: (context, date, events, holidays) {
         final children = <Widget>[];
@@ -190,13 +201,13 @@ class _CalendarPageState extends State<CalendarPage>
               // bottom: 1,
               child: Container(
                   color: Colors.pink[200],
-                  width: 12, height: 12,
+                  width: 12,
+                  height: 12,
                   child: Center(
                       child: Text(
                     '${events.length}',
                     style: TextStyle(fontSize: 8.0),
-                  ))
-                  ),
+                  ))),
             ),
           );
         }

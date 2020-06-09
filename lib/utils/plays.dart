@@ -10,3 +10,7 @@ final Map<String, List<String>> playDatabase = {
 // final Map<String, List<List<String>>> playURL = {
 //   ''
 // };
+
+final Map<String, List> playDatabaseDetail = {
+  'sociality': []
+};

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:ijoa/models/user.dart';
 import 'package:ijoa/pages/init_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ijoa/pages/info_input_views/child_input_view.dart';
@@ -38,17 +37,17 @@ class _ChildrenInputViewState extends State<ChildrenInputView> {
     List<String> _childrenMetadata = [];
     for (int i = 0; i < numChild; i++) {
       List _metadata = childrenMetadata[i];
-      // String _dataString = _metadata[0].toString() +
-      //     '/' +
-      //     _metadata[1].toString() +
-      //     '/' +
-      //     _metadata[2].toString();
       String _dataString =
-          _metadata[0].toString() + '/아직 없습니다/아직 없습니다/CHILDINDEX$i';
-      Map<String, String> _json = {
+          _metadata[0].toString() + '/아직 없습니다/아직 없습니다';
+      Map<String, dynamic> _json = {
         'name': _metadata[0].toString(),
         'birthday': _metadata[1].toString(),
-        'gender': _metadata[2].toString()
+        'gender': _metadata[2].toString(),
+        'sociality': 0,
+        'selfEsteem': 0,
+        'creativity': 0,
+        'happiness': 0,
+        'science': 0,
       };
       debugPrint('_dataString: $_dataString');
       _childrenMetadata.add(_dataString);
@@ -56,6 +55,8 @@ class _ChildrenInputViewState extends State<ChildrenInputView> {
     }
     prefs.setStringList('CHILDRENMETADATA', _childrenMetadata);
   }
+
+  // void _
 
   PageController pageController;
 

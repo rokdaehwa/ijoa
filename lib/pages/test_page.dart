@@ -54,11 +54,6 @@ class _TestPageState extends State<TestPage> {
   }
 
   String _getResult() {
-    // String _sociality = socialityScore.join('/');
-    // String _selfEsteem = selfEsteemScore.join('/');
-    // String _creativity = creativityScore.join('/');
-    // String _happiness = happinessScore.join('/');
-    // String _science = scienceScore.join('/');
     String _day = DateTime.now().toString().split(' ')[0];
 
     return [
@@ -82,12 +77,44 @@ class _TestPageState extends State<TestPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> _childResults =
         prefs.getStringList('${widget.childTag}RESULTS') ?? [];
+    List<String> _childrenMetadata =
+        prefs.getStringList('CHILDRENMETADATA') ?? [];
+    
     List<String> _newList = List<String>();
     _newList.addAll(_childResults);
     _newList.add(_getResult());
     debugPrint('_getResult: ${_getResult()}');
     prefs.setStringList('${widget.childTag}RESULTS', _newList);
-    return '$_newList';
+
+    int _childIndex = int.parse(widget.childTag[widget.childTag.length - 1]);
+    List<String> _childMetadata = _childrenMetadata[_childIndex].split('/');
+    _childMetadata[1] =
+        '${_getAverage(socialityScore)},${_getAverage(selfEsteemScore)},${_getAverage(creativityScore)},${_getAverage(happinessScore)},${_getAverage(scienceScore)}';
+    _childMetadata[2] = DateTime.now().toString().split(' ')[0];
+    _childrenMetadata[_childIndex] = _childMetadata.join('/');
+    prefs.setStringList('CHILDRENMETADATA', _childrenMetadata);
+    return '$_childrenMetadata';
+  }
+
+  Future setMetadata() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> _childrenMetadata =
+        prefs.getStringList('CHILDRENMETADATA') ?? [];
+    int _childIndex = int.parse(widget.childTag[widget.childTag.length - 1]);
+    List<String> _childMetadata = _childrenMetadata[_childIndex].split('/');
+    _childMetadata[1] =
+        '${_getAverage(socialityScore)},${_getAverage(selfEsteemScore)},${_getAverage(creativityScore)},${_getAverage(happinessScore)},${_getAverage(scienceScore)}';
+    _childMetadata[2] = DateTime.now().toString().split(' ')[0];
+    _childrenMetadata[_childIndex] = _childMetadata.join('/');
+    prefs.setStringList('CHILDRENMETADATA', _childrenMetadata);
+    return '$_childrenMetadata';
+  }
+
+  String _getAverage(String scoreString) {
+    List _score = scoreString.split('/');
+    var _sum = _score.map((e) => int.parse(e)).toList().reduce((a, b) => a + b);
+    int _len = _score.length;
+    return (_sum / _len).toStringAsFixed(2);
   }
 
   List<int> _scoreStringToList(String scoreString) {

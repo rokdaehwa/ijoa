@@ -22,20 +22,33 @@ class _InitPageState extends State<InitPage> {
   void _startHandler() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String _user = prefs.getString('USER');
+    List<String> _eventsToday =
+        prefs.getStringList('${DateTime.now().toString().split(' ')[0]}');
+
     List<String> _childrenMetadata = prefs.getStringList('CHILDRENMETADATA');
     if (_user == null) {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => InfoInputPage(initialPage: 0,)));
+          context,
+          MaterialPageRoute(
+              builder: (context) => InfoInputPage(
+                    initialPage: 0,
+                  )));
     } else if (_user != null && _childrenMetadata == null) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => InfoInputPage(initialPage: 1,)));
+          context,
+          MaterialPageRoute(
+              builder: (context) => InfoInputPage(
+                    initialPage: 1,
+                  )));
     } else {
       debugPrint('init: $_user');
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  HomePage(user: User.fromJson(jsonDecode(_user)))));
+              builder: (context) => HomePage(
+                    user: User.fromJson(jsonDecode(_user)),
+                    eventsToday: _eventsToday ?? [],
+                  )));
     }
   }
 

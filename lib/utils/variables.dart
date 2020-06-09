@@ -25,6 +25,23 @@ String fieldToKorean(String field) {
   }
 }
 
+String childTagToKorean(String childTag) {
+  switch (childTag) {
+    case 'CHILDINDEX0':
+      return '첫째';
+    case 'CHILDINDEX1':
+      return '둘째';
+    case 'CHILDINDEX2':
+      return '셋째';
+    case 'CHILDINDEX3':
+      return '넷째';
+    case 'CHILDINDEX4':
+      return '다섯째';
+    default:
+      return '알수없음';
+  }
+}
+
 final Map<String, Color> graphColors = {
   'sociality': Color(0xaaF8C89D),
   'selfEsteem': Color(0xaa1E90F9),

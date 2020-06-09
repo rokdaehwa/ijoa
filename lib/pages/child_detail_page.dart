@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'dart:core';
 
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:ijoa/decorations/concave_decoration.dart';
 import 'package:ijoa/pages/child_edit_page.dart';
 import 'package:ijoa/pages/detail_page.dart';
 import 'package:ijoa/pages/test_views/test_result_view.dart';
 import 'package:ijoa/widgets/custom_app_bar.dart';
+import 'package:ijoa/widgets/play_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:ijoa/utils/variables.dart';
@@ -15,10 +18,9 @@ import 'package:ijoa/widgets/custom_line_chart.dart';
 import 'test_page.dart';
 
 class ChildDetailPage extends StatefulWidget {
-  final String name;
   final String childTag;
 
-  const ChildDetailPage({Key key, this.name, this.childTag}) : super(key: key);
+  const ChildDetailPage({Key key, this.childTag}) : super(key: key);
   @override
   _ChildDetailPageState createState() => _ChildDetailPageState();
 }
@@ -27,6 +29,7 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
   List<bool> _selections = [false, true];
   int _selectedIndex = 1;
   List<String> _testResultString = [];
+  String _childInfo;
 
   // List<String> _testResultString;
 
@@ -44,21 +47,23 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
   @override
   void initState() {
     super.initState();
+    debugPrint('child-detail-page: ${widget.childTag}');
     _startInit();
   }
 
   void _startInit() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String _childInfo = prefs.getString(widget.childTag) ?? 'No Child Info';
     setState(() {
       _testResultString =
           prefs.getStringList('${widget.childTag}RESULTS') ?? [];
-      // '2020-05-24;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/3',
-      // '2020-05-25;2/3/1/2/3/1/4/1/2/3;2/3/1/0/3/1/4/1/2/3;2/3/1/2/3/1/4/1/0/3;2/3/0/2/3/1/4/1/2/3;2/3/1/2/3/1/4/1/2/0',
-      // '2020-06-04;4/2/4/2/3/3/2/4/3/1;1/3/2/4/1/3/2/4/1/3;1/3/4/1/3/1/4/1/2/3;1/3/1/2/4/1/3/1/3/4;1/3/2/2/3/2/3/3/2/4',
-      // '2020-06-04;1/2/3/1/3/1/3/2/4/3;1/3/1/3/2/1/3/1/3/4;2/3/2/3/2/3/4/3/2/4;2/3/4/3/2/1/4/2/4/2;1/3/2/3/4/2/3/4/3/3'
+      _childInfo = prefs.getString(widget.childTag) ?? 'child-datail-page';
     });
     debugPrint('childInfo: $_childInfo');
+  }
+
+  Map<String, dynamic> _getChildInfo() {
+    if (_childInfo == null) return {};
+    return jsonDecode(_childInfo);
   }
 
   @override
@@ -88,13 +93,12 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                           style: Theme.of(context).textTheme.headline4,
                           children: [
                         TextSpan(
-                          text: '첫째, ',
+                          text: '${childTagToKorean(widget.childTag)}, ',
                           style: TextStyle(color: Colors.grey),
                         ),
-                        TextSpan(
-                          text: widget.name,
-                          // style: TextStyle(color: Colors.yellow.shade800),
-                        ),
+                        TextSpan(text: '${_getChildInfo()['name'] ?? '이름'}'
+                            // style: TextStyle(color: Colors.yellow.shade800),
+                            ),
                       ]))),
               Container(
                 decoration: ConcaveDecoration(
@@ -159,36 +163,6 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                           ? _getLineChart()
                           : _getBarGraph(),
                     ),
-                    Container(
-                      color: Colors.amber[300],
-                      height: 80,
-                      child: Center(
-                          child: GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TestPage(
-                                    childTag: widget.childTag,
-                                  )),
-                        ),
-                        child: Container(
-                            width: 200,
-                            height: 40,
-                            // decoration: BoxDecoration(
-                            //   borderRadius: BorderRadius.circular(20.0),
-                            //   border: Border.all(color: Colors.white),
-                            //   // color: _contextColor.withOpacity(0.5)
-                            // ),
-                            child: Center(
-                                child: Text(
-                              '검사하기!',
-                              style: TextStyle(
-                                // color: Colors.black,
-                                fontSize: 16.0,
-                              ),
-                            ))),
-                      )),
-                    )
                   ],
                 ),
               ),
@@ -202,34 +176,38 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                       padding: EdgeInsets.only(left: 8, bottom: 2),
                       itemCount: 5,
                       itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                          width: 130,
-                          child: Card(
-                              margin: EdgeInsets.only(right: 8),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  Expanded(
-                                      child: Center(
-                                          child: Text(
-                                              '${fieldToKorean(cognitionFields[index])}\n놀이 $index'))),
-                                  FlatButton(
-                                    child: Text('자세히'),
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => DetailPage(
-                                                  title: '놀이 자세히',
-                                                  url:
-                                                      'https://www.notion.so/pavilionai/2-d4aa5017272f4d17bd6630baeecabb6a',
-                                                )),
-                                      );
-                                    },
-                                    textColor: Colors.grey,
-                                  )
-                                ],
-                              )),
+                        // return Container(
+                        //   width: 130,
+                        //   child: Card(
+                        //       margin: EdgeInsets.only(right: 8),
+                        //       child: Column(
+                        //         crossAxisAlignment: CrossAxisAlignment.end,
+                        //         children: <Widget>[
+                        //           Expanded(
+                        //               child: Center(
+                        //                   child: Text(
+                        //                       '${fieldToKorean(cognitionFields[index])}\n놀이 $index'))),
+                        //           FlatButton(
+                        //             child: Text('자세히'),
+                        //             onPressed: () {
+                        //               Navigator.push(
+                        //                 context,
+                        //                 MaterialPageRoute(
+                        //                     builder: (context) => DetailPage(
+                        //                           title: '놀이 자세히',
+                        //                           url:
+                        //                               'https://www.notion.so/pavilionai/2-d4aa5017272f4d17bd6630baeecabb6a',
+                        //                         )),
+                        //               );
+                        //             },
+                        //             textColor: Colors.grey,
+                        //           )
+                        //         ],
+                        //       )),
+                        // );
+                        return PlayTile(
+                          field: cognitionFields[index],
+                          playIndex: _getChildInfo()[cognitionFields[index]],
                         );
                       })),
               Divider(),
@@ -333,49 +311,105 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
       child: Container(
           height: 230,
           margin: EdgeInsets.only(bottom: 12),
-          child: _testResultString.isNotEmpty
-              ? ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.only(left: 8, bottom: 2),
-                  itemCount: _resultList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Container(
+          child: ListView.builder(
+              // reverse: true,
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.only(left: 8, bottom: 2),
+              itemCount: _resultList.length + 1,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == 0)
+                  return Container(
                       width: 160,
+                      height: 210,
+                      margin: EdgeInsets.only(right: 8),
                       child: GestureDetector(
-                        onTap: () {
-                          debugPrint('result detail!');
-                          Navigator.push(
+                        onTap: () async {
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => TestResultView(
+                                builder: (context) => TestPage(
                                       childTag: widget.childTag,
-                                      date: _resultList[index].split(';')[0],
-                                      socialityScore: _scoreStringToList(_resultList[index].split(';')[1]),
-                                      selfEsteemScore: _scoreStringToList(_resultList[index].split(';')[2]),
-                                      creativityScore: _scoreStringToList(_resultList[index].split(';')[3]),
-                                      happinessScore: _scoreStringToList(_resultList[index].split(';')[4]),
-                                      scienceScore: _scoreStringToList(_resultList[index].split(';')[5]),
                                     )),
                           );
+                          _startInit();
                         },
                         child: Card(
-                          margin: EdgeInsets.only(right: 8),
                           child: Center(
-                            child: Container(
-                                height: 210,
-                                child: CustomBarChart(
-                                  testResult: _resultList[index],
-                                  barHeight: 12.0,
-                                  maxWidth: 144,
-                                )),
-                          ),
+                              child: DottedBorder(
+                            borderType: BorderType.RRect,
+                            radius: Radius.circular(4.0),
+                            strokeCap: StrokeCap.round,
+                            dashPattern: [4, 4],
+                            strokeWidth: 2,
+                            color: Colors.grey.shade400,
+                            child: ClipRRect(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(12)),
+                              child: Container(
+                                child: Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.add,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                      Text(
+                                        '테스트 추가',
+                                        style: TextStyle(
+                                            // color: Colors.white,
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )),
                         ),
+                      ));
+                int _i = _resultList.length - index;
+                debugPrint('index is $_i');
+                return Container(
+                  width: 160,
+                  child: GestureDetector(
+                    onTap: () {
+                      debugPrint('result detail!');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TestResultView(
+                                  childTag: widget.childTag,
+                                  date: _resultList[_i].split(';')[0],
+                                  socialityScore: _scoreStringToList(
+                                      _resultList[_i].split(';')[1]),
+                                  selfEsteemScore: _scoreStringToList(
+                                      _resultList[_i].split(';')[2]),
+                                  creativityScore: _scoreStringToList(
+                                      _resultList[_i].split(';')[3]),
+                                  happinessScore: _scoreStringToList(
+                                      _resultList[_i].split(';')[4]),
+                                  scienceScore: _scoreStringToList(
+                                      _resultList[_i].split(';')[5]),
+                                )),
+                      );
+                    },
+                    child: Card(
+                      margin: EdgeInsets.only(right: 8),
+                      child: Center(
+                        child: Container(
+                            height: 210,
+                            child: CustomBarChart(
+                              testResult: _resultList[_i],
+                              barHeight: 12.0,
+                              maxWidth: 144,
+                            )),
                       ),
-                    );
-                  })
-              : Center(
-                  child: Text('검사 결과 없음'),
-                )),
+                    ),
+                  ),
+                );
+              })),
     );
   }
 
@@ -389,15 +423,9 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
             child: Container(
               width: 160.0,
               child: ListView.builder(
-                itemCount: 5,
+                itemCount: _getChildInfo()[tag],
                 itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    child: ListTile(
-                      dense: true,
-                      title: Text('놀이 이름'),
-                      subtitle: Text(tag),
-                    ),
-                  );
+                  return PlayedTile(field: tag, playIndex: index,);
                 },
               ),
             ),
