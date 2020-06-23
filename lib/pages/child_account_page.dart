@@ -1,24 +1,48 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:ijoa/models/user.dart';
-import 'package:ijoa/pages/init_page.dart';
 import 'package:ijoa/widgets/custom_app_bar.dart';
-import 'package:ijoa/widgets/nm_text_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AccountPage extends StatelessWidget {
-  final User user;
+class ChildAccountPage extends StatefulWidget {
+  final String childTag;
 
-  const AccountPage({Key key, this.user}) : super(key: key);
+  const ChildAccountPage({Key key, this.childTag}) : super(key: key);
+  @override
+  _ChildAccountPageState createState() => _ChildAccountPageState();
+}
+
+class _ChildAccountPageState extends State<ChildAccountPage> {
+  String _childInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    _startInit();
+  }
+
+  void _startInit() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _childInfo = prefs.getString(widget.childTag);
+    });
+  }
+
+  Map<String, dynamic> _getChildInfo() {
+    if (_childInfo == null) return {'birthday': ''};
+    return jsonDecode(_childInfo);
+  }
 
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> _childInfoMap = _getChildInfo();
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: <Widget>[
             NMAppBar(
               title: Text(
-                '계정 정보',
+                '아이 정보',
                 style: Theme.of(context).textTheme.headline4,
               ),
               trailingIcon: Icons.close,
@@ -31,32 +55,20 @@ class AccountPage extends StatelessWidget {
                 children: <Widget>[
                   ListTile(
                     title: Text('이름'),
-                    trailing: Text(user.name),
+                    trailing: Text(_childInfoMap['name'] ?? '이름'),
                   ),
                   ListTile(
                     title: Text('생일'),
-                    trailing: Text(user.birthday),
+                    trailing:
+                        Text(_childInfoMap['birthday'].split(' ')[0] ?? '생일'),
                   ),
                   ListTile(
                     title: Text('구분'),
-                    trailing: Text(user.momOrDad),
+                    trailing: Text(_childInfoMap['gender'] ?? '구분'),
                   ),
                 ],
               ),
             ),
-            SizedBox(
-              height: 36.0,
-            ),
-            NMTextButton(
-              text: '전체 초기화',
-              onTap: () async {
-                SharedPreferences _prefs =
-                    await SharedPreferences.getInstance();
-                await _prefs.clear();
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => InitPage()));
-              },
-            )
           ],
         ),
       ),

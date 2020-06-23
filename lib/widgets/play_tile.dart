@@ -12,17 +12,27 @@ class PlayTile extends StatelessWidget {
   Widget build(BuildContext context) {
     Map<String, dynamic> _playInfo = getPlayInfo(field, playIndex);
     return Container(
-      width: 150,
+      width: 160,
       // height: 150,
       child: Card(
-        color: graphColors[field],
+        // color: graphColors[field],
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             ListTile(
-              title: Text(_playInfo['subField']),
+              title: Text(_playInfo['subField'], overflow: TextOverflow.ellipsis,),
+              subtitle: Text('${_playInfo['week'] + 1}주차'),
             ),
-            ListTile(
-              title: Text('${_playInfo['week'] + 1}주차'),
+            Expanded(child: Container()),
+            FlatButton(
+              child: Text('자세히'),
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DetailPage(
+                            title: _playInfo['subField'],
+                            url: _playInfo['url'],
+                          ))),
             )
           ],
         ),

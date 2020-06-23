@@ -4,7 +4,7 @@ import 'dart:core';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:ijoa/decorations/concave_decoration.dart';
-import 'package:ijoa/pages/child_edit_page.dart';
+import 'package:ijoa/pages/child_account_page.dart';
 import 'package:ijoa/pages/detail_page.dart';
 import 'package:ijoa/pages/test_views/test_result_view.dart';
 import 'package:ijoa/widgets/custom_app_bar.dart';
@@ -79,12 +79,12 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                   leadingIcon: Icons.arrow_back_ios,
                   leadingTooltip: '뒤로 가기',
                   leadingOnTap: () => Navigator.pop(context),
-                  trailingIcon: Icons.mode_edit,
+                  trailingIcon: Icons.account_circle,
                   trailingTooltip: '정보 수정하기',
                   trailingOnTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ChildEditPage(
+                            builder: (context) => ChildAccountPage(
                                   childTag: widget.childTag,
                                 )),
                       ),
@@ -178,7 +178,8 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                       itemBuilder: (BuildContext context, int index) {
                         return PlayTile(
                           field: cognitionFields[index],
-                          playIndex: _getChildInfo()[cognitionFields[index]] ?? 0,
+                          playIndex:
+                              _getChildInfo()[cognitionFields[index]] ?? 0,
                         );
                       })),
               Divider(),
@@ -385,22 +386,32 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
   }
 
   Widget _buildPlayedDone(String tag) {
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
+    return Container(
+      width: 160,
+      padding: const EdgeInsets.only(left: 4.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Text(fieldToKorean(tag)),
-          Expanded(
-            child: Container(
-              width: 160.0,
-              child: ListView.builder(
-                itemCount: _getChildInfo()[tag],
-                itemBuilder: (BuildContext context, int index) {
-                  return PlayedTile(field: tag, playIndex: index,);
-                },
-              ),
-            ),
-          ),
+          (_getChildInfo()[tag] == 0)
+              ? Text(
+                  '\n아직 없어요',
+                  style: TextStyle(color: Colors.grey),
+                )
+              : Expanded(
+                  child: Container(
+                    // width: 160.0,
+                    child: ListView.builder(
+                      itemCount: _getChildInfo()[tag],
+                      itemBuilder: (BuildContext context, int index) {
+                        return PlayedTile(
+                          field: tag,
+                          playIndex: index,
+                        );
+                      },
+                    ),
+                  ),
+                ),
         ],
       ),
     );
