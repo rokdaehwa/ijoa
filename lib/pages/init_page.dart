@@ -59,11 +59,6 @@ class _InitPageState extends State<InitPage> {
         child: Container(
           height: 100,
           width: 100,
-          // color: Colors.amber,
-          child: Center(
-            // child: Image.asset('static/images/logo.png')
-            child: CircularProgressIndicator(),
-          ),
         ),
       ),
     );

@@ -31,7 +31,6 @@ dependencies:
   # rok's
   intl: ^0.16.1
   table_calendar: ^2.2.3
-  badges: ^1.1.1
   google_fonts: ^1.1.0
   webview_flutter: ^0.3.22+1
   flutter_datetime_picker: ^1.3.8

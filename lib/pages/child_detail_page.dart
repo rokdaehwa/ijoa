@@ -176,38 +176,9 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                       padding: EdgeInsets.only(left: 8, bottom: 2),
                       itemCount: 5,
                       itemBuilder: (BuildContext context, int index) {
-                        // return Container(
-                        //   width: 130,
-                        //   child: Card(
-                        //       margin: EdgeInsets.only(right: 8),
-                        //       child: Column(
-                        //         crossAxisAlignment: CrossAxisAlignment.end,
-                        //         children: <Widget>[
-                        //           Expanded(
-                        //               child: Center(
-                        //                   child: Text(
-                        //                       '${fieldToKorean(cognitionFields[index])}\n놀이 $index'))),
-                        //           FlatButton(
-                        //             child: Text('자세히'),
-                        //             onPressed: () {
-                        //               Navigator.push(
-                        //                 context,
-                        //                 MaterialPageRoute(
-                        //                     builder: (context) => DetailPage(
-                        //                           title: '놀이 자세히',
-                        //                           url:
-                        //                               'https://www.notion.so/pavilionai/2-d4aa5017272f4d17bd6630baeecabb6a',
-                        //                         )),
-                        //               );
-                        //             },
-                        //             textColor: Colors.grey,
-                        //           )
-                        //         ],
-                        //       )),
-                        // );
                         return PlayTile(
                           field: cognitionFields[index],
-                          playIndex: _getChildInfo()[cognitionFields[index]],
+                          playIndex: _getChildInfo()[cognitionFields[index]] ?? 0,
                         );
                       })),
               Divider(),
@@ -418,7 +389,7 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
       padding: const EdgeInsets.all(4.0),
       child: Column(
         children: <Widget>[
-          Text(tag),
+          Text(fieldToKorean(tag)),
           Expanded(
             child: Container(
               width: 160.0,

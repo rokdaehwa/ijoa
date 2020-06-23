@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:ijoa/models/event.dart';
 import 'package:ijoa/pages/child_detail_page.dart';
+import 'package:ijoa/pages/detail_page.dart';
 import 'package:ijoa/utils/plays.dart';
 import 'package:ijoa/utils/variables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -58,7 +59,7 @@ class _EventTileState extends State<EventTile> {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     List<String> _eventsToday = _prefs.getStringList(_date) ?? [];
     String _eventCompleted =
-        _eventsToday[widget.index].split('/').sublist(0, 4).join('/') +
+        _eventsToday[widget.index].split('/').sublist(0, 3).join('/') +
             '/${DateTime.now()}';
     _eventsToday[widget.index] = _eventCompleted;
     debugPrint('complete? $_eventsToday');
@@ -81,7 +82,7 @@ class _EventTileState extends State<EventTile> {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     List<String> _eventsToday = _prefs.getStringList(_date) ?? [];
     String _eventCompleted =
-        _eventsToday[widget.index].split('/').sublist(0, 4).join('/');
+        _eventsToday[widget.index].split('/').sublist(0, 3).join('/');
     _eventsToday[widget.index] = _eventCompleted;
     debugPrint('un-complete? $_eventsToday');
     _prefs.setStringList(_date, _eventsToday);
@@ -100,6 +101,10 @@ class _EventTileState extends State<EventTile> {
   @override
   Widget build(BuildContext context) {
     List _eventInfo = widget.event.split('/');
+    debugPrint('tile info: $_eventInfo');
+    String _field = _eventInfo[1];
+    int _index = int.parse(_eventInfo[2]);
+    Map<String, dynamic> _playInfo = getPlayInfo(_field, _index);
     return Container(
       width: 210,
       padding: EdgeInsets.all(16.0),
@@ -116,7 +121,7 @@ class _EventTileState extends State<EventTile> {
             children: <Widget>[
               Expanded(
                 child: Text(
-                  playDatabase[_eventInfo[1]][int.parse(_eventInfo[2])],
+                  _playInfo['subField'],
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                       color: _contextColor,
@@ -125,7 +130,13 @@ class _EventTileState extends State<EventTile> {
                 ),
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DetailPage(
+                              title: _playInfo['subField'],
+                              url: _playInfo['url'],
+                            ))),
                 child: Container(
                   width: 24.0,
                   height: 24.0,

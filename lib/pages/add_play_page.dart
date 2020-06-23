@@ -22,7 +22,6 @@ class _AddPlayPageState extends State<AddPlayPage> {
 
   String _selectedChild;
   String _selectedField;
-  List<String> _subFields;
 
   @override
   void initState() {
@@ -116,10 +115,10 @@ class _AddPlayPageState extends State<AddPlayPage> {
                     _prefs.getString('CHILDINDEX$_childIndex');
                 Map<String, dynamic> _childInfoMap =
                     jsonDecode(_childInfoStirng);
-                int _subFieldIndex = _childInfoMap[_selectedField] % 6;
-                int _weekIndex = _childInfoMap[_selectedField] ~/ 6;
+                // int _subFieldIndex = _childInfoMap[_selectedField] % 6;
+                // int _weekIndex = _childInfoMap[_selectedField] ~/ 6;
                 String _event =
-                    'CHILDINDEX$_childIndex/$_selectedField/$_subFieldIndex/$_weekIndex';
+                    'CHILDINDEX$_childIndex/$_selectedField/${_childInfoMap[_selectedField]}';
                 List<String> _eventsToday = _prefs.getStringList(
                         '${DateTime.now().toString().split(' ')[0]}') ??
                     [];
@@ -196,9 +195,7 @@ class _AddPlayPageState extends State<AddPlayPage> {
       onChanged: (String newValue) {
         setState(() {
           _selectedField = newValue;
-          _subFields = playDatabase[newValue];
         });
-        debugPrint('subfields: $_subFields');
       },
       items: cognitionFields
           .asMap()

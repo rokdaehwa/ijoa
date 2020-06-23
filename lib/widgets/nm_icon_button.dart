@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ijoa/decorations/concave_decoration.dart';
 import 'package:ijoa/decorations/nm_box.dart';
-import 'package:badges/badges.dart';
 
 class NMButton extends StatefulWidget {
   final IconData icon;
@@ -42,23 +41,18 @@ class _NMButtonState extends State<NMButton> {
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: Container(
-          width: widget.size.width,
-          height: widget.size.height,
-          decoration: _isPressed
-              ? ConcaveDecoration(
-                  depth: 4,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15.0))))
-              : nMbox,
-          child: Badge(
-            showBadge: widget.hasBadge,
-            badgeColor: Colors.amber,
+            width: widget.size.width,
+            height: widget.size.height,
+            decoration: _isPressed
+                ? ConcaveDecoration(
+                    depth: 4,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(15.0))))
+                : nMbox,
             child: Icon(
               widget.icon,
               color: _isPressed ? fCD : fCL,
-            ),
-          ),
-        ),
+            )),
       ),
     );
   }
